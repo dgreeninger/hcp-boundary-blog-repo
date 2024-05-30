@@ -62,6 +62,37 @@ locals {
       type = ["sm-ingress-upstream-worker1", "upstream"]
     }
   }
+
+# Events (logging) configuration. This
+# configures logging for ALL events to both
+# stderr and a file at /var/log/boundary/<boundary_use>.log
+events {
+  audit_enabled       = true
+  sysevents_enabled   = true
+observations_enable = true
+sink "stderr" {
+  name = "all-events"
+  description = "All events sent to stderr"
+  event_types = ["*"]
+  format = "cloudevents-json"
+}
+sink {
+  name = "file-sink"
+  description = "All events sent to a file"
+  event_types = ["*"]
+  format = "cloudevents-json"
+  file {
+    path = "/var/log/boundary"
+    file_name = "ingress-worker.log"
+  }
+  audit_config {
+    audit_filter_overrides {
+      sensitive = "redact"
+      secret    = "redact"
+    }
+  }
+}
+}
 WORKER_HCL_CONFIG
 
   cloudinit_config_boundary_ingress_worker = {

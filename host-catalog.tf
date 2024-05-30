@@ -21,7 +21,8 @@ resource "boundary_host_catalog_plugin" "aws_plugin" {
   plugin_name = "aws"
   attributes_json = jsonencode({
     "region" = "eu-west-2",
-  "disable_credential_rotation" = true })
+    "disable_credential_rotation" = true 
+  })
 
 
   secrets_json = jsonencode({

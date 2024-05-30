@@ -31,7 +31,7 @@ locals {
   Group=boundary
   ProtectSystem=full
   ProtectHome=read-only
-  ExecStart=/usr/bin/boundary-worker server -config=/etc/boundary.d/pki-worker.hcl
+  ExecStart=/usr/bin/boundary server -config=/etc/boundary.d/pki-worker.hcl
   ExecReload=/bin/kill --signal HUP $MAINPID
   KillMode=process
   KillSignal=SIGINT
@@ -47,10 +47,6 @@ locals {
   boundary_egress_worker_hcl_config = <<-WORKER_HCL_CONFIG
   disable_mlock = true
 
-  listener "tcp" {
-    address = "0.0.0.0:9202"
-    purpose = "proxy"
-  }
 
   worker {
     public_addr = "192.168.0.7:9202"
@@ -61,6 +57,42 @@ locals {
       type = ["sm-egress-downstream-worker1", "downstream"]
     }
   }
+
+# Events (logging) configuration. This
+# configures logging for ALL events to both
+# stderr and a file at /var/log/boundary/<boundary_use>.log
+events {
+  audit_enabled       = true
+  sysevents_enabled   = true
+  observations_enable = true
+  sink "stderr" {
+    name = "all-events"
+    description = "All events sent to stderr"
+    event_types = ["*"]
+    format = "cloudevents-json"
+  }
+  sink {
+    name = "file-sink"
+    description = "All events sent to a file"
+    event_types = ["*"]
+    format = "cloudevents-json"
+    file {
+      path = "/var/log/boundary"
+      file_name = "egress-worker.log"
+    }
+    audit_config {
+      audit_filter_overrides {
+        sensitive = "redact"
+        secret    = "redact"
+      }
+    }
+  }
+}
+
+listener "tcp" {
+  address = "0.0.0.0:9202"
+  purpose = "proxy"
+}
 
 WORKER_HCL_CONFIG
 

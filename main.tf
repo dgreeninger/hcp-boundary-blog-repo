@@ -30,7 +30,7 @@ provider "boundary" {
   # Use variables to provide values for the provider configuration
   addr                            = var.boundary_addr
   auth_method_id                  = var.auth_method_id
-  password_auth_method_login_name = var.password_auth_method_login_name
-  password_auth_method_password   = var.password_auth_method_password
+  auth_method_login_name = var.password_auth_method_login_name
+  auth_method_password   = var.auth_method_password
 
 }

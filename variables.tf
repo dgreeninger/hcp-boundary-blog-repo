@@ -10,7 +10,7 @@ variable "password_auth_method_login_name" {
   type = string
 }
 
-variable "password_auth_method_password" {
+variable "auth_method_password" {
   type = string
 }
 

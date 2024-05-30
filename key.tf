@@ -15,4 +15,9 @@ resource "aws_key_pair" "ec2_key" {
       chmod 400 ec2-key.pem
     EOT
   }
+
+  provisioner "local-exec" {
+    command = "rm ec2-key.pem"
+    when    = destroy
+  }
 }
